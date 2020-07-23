@@ -1,4 +1,4 @@
-package wordcount.manual
+package wordcount.router
 
 import akka.actor.{Actor, ActorLogging}
 
@@ -25,3 +25,4 @@ class Worker extends Actor with ActorLogging{
       log.info(s"$prefix Unknown message: ${other.toString}")
   }
 }
+
