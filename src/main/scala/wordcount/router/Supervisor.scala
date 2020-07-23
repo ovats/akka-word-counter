@@ -1,4 +1,4 @@
-package wordcount.manual
+package wordcount.router
 
 import akka.actor.{Actor, ActorLogging, Props}
 

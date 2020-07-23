@@ -8,9 +8,7 @@ object Master {
 }
 
 class Master extends Actor with ActorLogging {
-  import Supervisor._
   import Master._
-  import Worker._
 
   val prefix = "[Master]"
 
@@ -19,7 +17,7 @@ class Master extends Actor with ActorLogging {
       log.info(s"$prefix Initializing $numWorkers workers ...")
       val workers = for(i<-1 to numWorkers) yield createWorkerActor(i)
       context.become(ready(workers, 0, 0))
-      sender() ! WorkersReady
+      sender() ! Supervisor.WorkersReady
 
     case other =>
       log.info(s"$prefix Unknown message: ${other.toString}")
@@ -27,9 +25,8 @@ class Master extends Actor with ActorLogging {
 
   def ready(workers: Seq[ActorRef], currentWorker: Int, currentTask: Int): Receive = {
     case ProcessLine(oneLine) =>
-      log.info(s"$prefix line to process has arrived: $oneLine")
-      log.info(s"$prefix currentWorker=$currentWorker currentTask=$currentTask")
-      workers(currentWorker) ! CountWords(oneLine, currentTask)
+      log.info(s"$prefix currentWorker=$currentWorker currentTask=$currentTask, line to process has arrived: $oneLine")
+      workers(currentWorker) ! Worker.CountWords(oneLine, currentTask)
       val nextWorker = (currentWorker+1) % workers.length
       val nextTask = currentTask+1
       context.become(ready(workers, nextWorker, nextTask))
