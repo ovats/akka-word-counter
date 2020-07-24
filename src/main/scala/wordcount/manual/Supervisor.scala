@@ -5,6 +5,7 @@ import akka.actor.{Actor, ActorLogging, Props}
 object Supervisor {
   case class Start(numWorkers: Int, text: List[String])
   case object WorkersReady
+  case object DisplayResults
 }
 
 class Supervisor extends Actor with ActorLogging {
@@ -27,6 +28,10 @@ class Supervisor extends Actor with ActorLogging {
     case WorkersReady =>
       log.info(s"$prefix starting to process the text")
       text.foreach(oneLine => master ! Master.ProcessLine(oneLine))
+
+    case DisplayResults =>
+      log.info(s"$prefix Supervisor/DisplayResults")
+      master ! Master.DisplayResults
 
     case other =>
       log.info(s"$prefix Unknown message: ${other.toString}")
