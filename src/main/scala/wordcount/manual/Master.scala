@@ -5,6 +5,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 object Master {
   case class InitializeWorkers(numWorkers: Int)
   case class ProcessLine(line: String)
+  case object DisplayResults
 }
 
 class Master extends Actor with ActorLogging {
@@ -30,6 +31,10 @@ class Master extends Actor with ActorLogging {
       val nextWorker = (currentWorker+1) % workers.length
       val nextTask = currentTask+1
       context.become(ready(workers, nextWorker, nextTask))
+
+    case DisplayResults =>
+      log.info(s"$prefix Master/DisplayResults")
+      workers.foreach(_ ! Worker.DisplayResultsWorker)
 
     case other =>
       log.info(s"$prefix Unknown message: ${other.toString}")
